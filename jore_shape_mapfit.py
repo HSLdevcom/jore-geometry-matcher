@@ -87,7 +87,7 @@ def jore_shape_mapfit(
 		type_filter = ROUTE_TYPE_FILTERS.get(route_type)
 		graph = graphs[type_filter]
 
-		if graph is None:
+		if graph is None or len(shape_coords) <= 2:
 			return shape["properties"], shape_coords, [], [], None, None
 
 		state_model = omm.DrawnGaussianStateModel(30, 0.05, graph)
