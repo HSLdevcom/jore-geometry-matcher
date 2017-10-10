@@ -3,8 +3,6 @@ import os
 import sys
 import time
 import datetime
-import json
-import urllib2
 import contextlib
 import psycopg2
 
@@ -21,6 +19,7 @@ ROUTE_TYPE_FILTERS = {
 
 from threading import Lock, RLock, Thread
 from Queue import Queue
+
 stderr_lock = Lock()
 def stderr(*args):
 	with stderr_lock:
@@ -30,25 +29,16 @@ def jore_shape_mapfit(
 		map_file,
 		projection,
 		connection_string,
-		graphql_endpoint="http://kartat.hsl.fi/jore/graphql",
 		search_region=100.0
 	):
 
-	req = urllib2.Request(
-		graphql_endpoint,
-		'{"query":"query networkQuery { pointNetworkAsGeojson }","variables":null,"operationName":"networkQuery"}',
-		{"Content-Type": "application/json", "Accept": "application/json"}
-	)
-
-	#urllib2.install_opener(urllib2.build_opener(urllib2.HTTPHandler(debuglevel=1)))
-
-	with contextlib.closing(urllib2.urlopen(req)) as shape_stream:
-		shapes = json.load(shape_stream).get("data").get("pointNetworkAsGeojson")
-
-	print "opened file"
-
 	conn = psycopg2.connect(connection_string)
 	cur = conn.cursor()
+
+	cur.execute("SELECT jore.point_network_as_geojson()")
+	feature_collection = cur.fetchone()[0]
+	shapes = list(feature_collection["features"])
+
 	cur.execute("DELETE FROM jore.geometry")
 	projection = omm.CoordinateProjector(projection)
 
@@ -111,8 +101,6 @@ def jore_shape_mapfit(
 
 		return shape["properties"], fitted, fitted_nodes, states, matcher, type_filter
 
-	shapes = list(shapes["features"])
-
 	start_time = time.time()
 	results = (do_fit(s) for s in shapes)
 	for i, (shape_props, shape_coords, ids, states, matcher, type_filter) in enumerate(results):
@@ -152,4 +140,3 @@ def jore_shape_mapfit(
 if __name__ == '__main__':
 	import argh
 	argh.dispatch_command(jore_shape_mapfit)
-
