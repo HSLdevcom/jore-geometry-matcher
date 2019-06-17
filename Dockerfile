@@ -1,6 +1,7 @@
 FROM python:2
 
 ENV WORKDIR="/opt/jore-geometry-matcher"
+ENV PG_CONNECTION_STRING="postgres://postgres:mysecretpassword@localhost:5432/postgres"
 
 WORKDIR $WORKDIR
 
