@@ -23,7 +23,12 @@ from Queue import Queue
 stderr_lock = Lock()
 def stderr(*args):
 	with stderr_lock:
-		print >>sys.stderr, ' '.join(args)
+		print >> sys.stderr, ' '.join(args)
+
+stdout_lock = Lock()
+def stdout(*args):
+  with stdout_lock:
+    print >> sys.stdout, ' '.join(args)
 
 def jore_shape_mapfit(
 		map_file,
@@ -59,13 +64,13 @@ def jore_shape_mapfit(
 
 		def __missing__(self, type_filter):
 			if type_filter is None:
-				# print >>sys.stderr, "No map filter for route type %s"%type_filter
+				stdout("No map filter for route type %s"%type_filter)
 				self[type_filter] = None
 				return None
 			filt = getattr(omm, type_filter)
-			# stderr("Loading graph for %s"%type_filter)
+			stdout("Loading graph for %s"%type_filter)
 			graph = omm.OsmGraph(map_file, projection, filt)
-                        # stderr("Loaded graph for %s"%type_filter)
+                        stdout("Loaded graph for %s"%type_filter)
 			self[type_filter] = graph
 			return graph
 	graphs = Graphs()
@@ -117,7 +122,7 @@ def jore_shape_mapfit(
 			minlik = min(likelihoods)
 			n_outliers = matcher.n_outliers
 		logrow = shape_id, minlik, n_outliers, type_filter, status
-		stderr(';'.join(map(str, logrow)))
+		stdout(';'.join(map(str, logrow)))
 
 		cur.execute(
 			"INSERT INTO jore.geometry VALUES (%s, %s, %s, %s, %s::jore.mode, ST_GEOMETRYFROMTEXT(%s, 4326), %s, %s)",
