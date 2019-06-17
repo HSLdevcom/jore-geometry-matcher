@@ -1,7 +1,7 @@
 FROM python:2
 
 ENV WORKDIR="/opt/jore-geometry-matcher"
-ENV PG_CONNECTION_STRING="postgres://postgres:mysecretpassword@localhost:5432/postgres"
+ENV PG_CONNECTION_STRING="postgres://postgres:mysecretpassword@jore-postgis:5432/postgres"
 
 WORKDIR $WORKDIR
 
@@ -28,3 +28,4 @@ RUN cd $WORKDIR && \
 CMD cd ${WORKDIR} && \
   wget http://download.geofabrik.de/europe/finland-latest.osm.pbf && \
   python jore_shape_mapfit.py finland-latest.osm.pbf +init=epsg:3067 $PG_CONNECTION_STRING
+
