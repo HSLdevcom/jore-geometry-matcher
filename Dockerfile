@@ -10,8 +10,9 @@ RUN apt-get update && \
     git build-essential python-dev protobuf-compiler libprotobuf-dev \
     make swig g++ libreadosm-dev libboost-graph-dev libproj-dev \
     libgoogle-perftools-dev osmctools unzip zip wget && \
-  rm -rf /var/lib/apt/lists/* && \
-  wget https://bootstrap.pypa.io/get-pip.py && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN wget https://bootstrap.pypa.io/get-pip.py && \
   python get-pip.py && \
   pip install imposm.parser && \
   pip install argh && \
