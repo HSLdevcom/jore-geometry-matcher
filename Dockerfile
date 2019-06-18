@@ -12,9 +12,7 @@ RUN apt-get update && \
     libgoogle-perftools-dev osmctools unzip zip wget && \
   rm -rf /var/lib/apt/lists/*
 
-RUN wget https://bootstrap.pypa.io/get-pip.py && \
-  python get-pip.py && \
-  pip install imposm.parser && \
+RUN pip install imposm.parser && \
   pip install argh && \
   pip install pyproj && \
   pip install psycopg2
