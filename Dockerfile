@@ -6,9 +6,12 @@ ENV PG_CONNECTION_STRING="postgres://postgres:mysecretpassword@jore-postgis:5432
 WORKDIR $WORKDIR
 
 RUN apt-get update && \
-  apt-get -y install \
-    git build-essential python-dev protobuf-compiler libprotobuf-dev \
-    make swig g++ libreadosm-dev libboost-graph-dev libproj-dev \
+  apt-get -y install git build-essential software-properties-common && \
+  # Needs new versions from the Buster repo, otherwise the matcher won't work
+  apt-add-repository 'deb http://ftp.us.debian.org/debian buster main contrib non-free' && \
+  apt-get update && \
+  apt-get -y install protobuf-compiler python-dev \
+    libprotobuf-dev make swig g++ libreadosm-dev libboost-graph-dev libproj-dev \
     libgoogle-perftools-dev osmctools unzip zip wget && \
   rm -rf /var/lib/apt/lists/*
 
